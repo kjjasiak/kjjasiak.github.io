@@ -11,25 +11,6 @@ function Calc(calcSelector) {
     this.operand = null;
     this.operator = null;
     this.isCleared = true;
-    this.operatorKeys = {
-        187: "+",
-        189: "-",
-        56: "*",
-        191: "/"
-    },
-    this.actionKeys = {
-        46: "clear",
-        13: "equal",
-        187: "equal"
-    },
-    this.tmpOps = {
-        "+": "+",
-        "-": "-",
-        "*": "×",
-        "/": "÷"
-    }
-
-    this.setIDs();
 };
 
 // arithmetic functions
@@ -50,7 +31,7 @@ function Calc(calcSelector) {
      return (b > 0) ? a / b : alert("Nie mozna dzielic przez zero!");
  }
 
- Calc.prototype.equal = function() {
+ Calc.prototype.eval = function() {
     let a = parseFloat(this.operand),
         b = parseFloat(this.convertSep(this.window.value)),
         result = 0;
@@ -65,7 +46,7 @@ function Calc(calcSelector) {
         case "-":
             result = this.substract(a, b);
             break;
-        case "*":
+        case "x":
             result = this.multiply(a, b);
             break;
         case "/":
@@ -95,15 +76,6 @@ Calc.prototype.clear = function() {
 }
 
 // helper functions
-
-Calc.prototype.setIDs = function(val) {
-    let numberKeys = document.querySelectorAll(".btn-number");
-    console.log(numberKeys);
-
-    for (let key of numberKeys) {
-        key.id = "number-" + key.textContent;
-    }
-}
 
 Calc.prototype.setWindow = function(val) {
     this.window.value = val;
@@ -168,11 +140,14 @@ Calc.prototype.onOperatorClick = function(val, target) {
     this.isCleared = true;
 }
 
-Calc.prototype.onActionClick = function(target) {
-    this[target.id]();
+Calc.prototype.onActionClick = function(val, target) {
+    let fnToRun = target.name;
+    this[fnToRun]();
 }
 
 Calc.prototype.onNumberClick = function(target) {
+    console.log(target.innerText);
+   
     if (this.isCleared)
         this.setWindow("");
     
@@ -187,55 +162,20 @@ Calc.prototype.onButtonClick = function(event) {
     if (target.className.indexOf("btn") < 0)
         return;
     
-    console.log("target.value: " + target.value);
-
-    if (this.tmpOps.hasOwnProperty(target.value))
-    //if (target.value.match(this.operators))
+    if (target.value.match(this.operators))
         this.onOperatorClick(btnText, target);
     else if (btnText.match(this.actions)) 
-        this.onActionClick(target);
+        this.onActionClick(btnText, target);
     else if (btnText.match(this.numbers))
         this.onNumberClick(target);
 }
 
 Calc.prototype.onKeyPress = function(event) {
-    console.log(event);
-    console.log(event.which);
-
     let keyCode = event.which;
 
-    if (event.shiftKey) {
-        if (keyCode == 56 || keyCode == 187) {
-            let keyBtn = document.querySelector('[value="' + event.key + '"]');
+    if (keyCode >= 48 && keyCode <= 57)
+        this.onNumberClick({ innerText: keyCode - 48 });        
 
-            this.onOperatorClick(this.tmpOps[this.operatorKeys[keyCode]], { value: this.operatorKeys[keyCode] });
-            keyBtn.classList.add("focus");
-            setTimeout(function(){ keyBtn.classList.remove("focus"); }, 300);
-            return;
-        }
-    }
-
-    if (keyCode >= 48 && keyCode <= 57) {
-        let keyBtn = document.getElementById("number-" + event.key);
-
-        this.onNumberClick({ innerText: keyCode - 48 });
-        keyBtn.classList.add("focus");
-        setTimeout(function(){ keyBtn.classList.remove("focus"); }, 300);
-        return;
-    }
-
-    if (keyCode == 188) {
-        this.onNumberClick({ innerText: "," });
-        return;
-    }
-
-    if (this.actionKeys.hasOwnProperty(keyCode)) {
-        this.onActionClick({ id: this.actionKeys[keyCode] });
-        return;
-    } 
-
-    if (this.operatorKeys.hasOwnProperty(keyCode)) {
-        this.onOperatorClick(this.tmpOps[this.operatorKeys[keyCode]], { value: this.operatorKeys[keyCode] });
-        return;
-    }
+    if (keyCode == 46)
+        this.clear();
 }
