@@ -1,0 +1,76 @@
+@import url('https://fonts.googleapis.com/css?family=Baloo+2&display=swap');
+
+html, body {
+    height: 100%;
+    width: 100%;
+}
+
+html {
+    font-family: 'Baloo 2', cursive;
+    font-size: 100%;
+}
+
+body {
+    position: relative;
+    background-color: #f1f1f1;
+}
+
+.calc-main {
+    width: 44.55vh;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 4vh;
+    border-radius: 2vh;
+    background-color: #ddd;
+}
+
+.calc-input-window {
+    position: relative;
+    width: 36.55vh;
+    height: 12.6vh;
+}
+
+.calc-input-window .window-operand {
+    display: block;
+    height: 30px;
+    width: 90%;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    text-align: right;
+    font-size: 12px;
+}
+
+.calc-input-window .window-operator {
+    width: 30px;
+    padding-left: 10px;
+    display: block;
+    height: 30px;
+    position: absolute;
+    bottom: 5px;
+}
+
+.calc-input-window input {
+    text-align: right;
+    height: 12.6vh;
+    padding-top: 30px;
+}
+
+.calc-button-row {
+    padding-bottom: 5px;
+    margin: 0 auto 0 0;
+}
+
+.calc-button-row button {
+    height: 8.5vh;
+    width: 8.5vh;
+    position: relative;
+    font-size: 3vh;
+    border-radius: 1vh;
+}
+
+.calc-button-row .btn-light {
+    border: 1px solid #ddd;
+}
