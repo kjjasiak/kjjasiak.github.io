@@ -1,0 +1,64 @@
+body {
+    display: flex;
+    height: 100vh;
+    font-family: 'Roboto', sans-serif;
+}
+
+.mdc-drawer-app-content {
+    flex: auto;
+    overflow: auto;
+    position: relative;
+}
+
+.main-content {
+    overflow: auto;
+    height: 100%;
+}
+
+.app-bar {
+    position: absolute;
+}
+
+.mdc-top-app-bar {
+    z-index: 7;
+}
+
+.mdc-chip-set {
+    display: inline-block;
+}
+
+.mdc-fab {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+}
+
+.mdc-text-field:not(.mdc-text-field--disabled):not(.mdc-text-field--outlined):not(.mdc-text-field--textarea) .mdc-text-field__input {
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: transparent;
+}
+
+.mdc-text-field:not(.mdc-text-field--disabled):not(.mdc-text-field--outlined):not(.mdc-text-field--textarea) .mdc-text-field__input:focus {
+    border-bottom-color: rgba(0, 0, 0, 0.42);
+}
+
+.mdc-text-field:not(.mdc-text-field--disabled):not(.mdc-text-field--outlined):not(.mdc-text-field--textarea) .mdc-text-field__input:hover {
+    border-bottom-color: rgba(0, 0, 0, 0.87);
+}
+
+.todo-label {
+    white-space: pre-wrap;
+}
+
+.todo-input {
+    width: 100%;
+}
+
+li.todo-done .todo-input {
+    text-decoration: line-through;
+}
+
+.mdc-list-item__meta {
+    display: flex;
+}
