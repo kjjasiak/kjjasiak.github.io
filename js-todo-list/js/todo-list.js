@@ -14,9 +14,19 @@ class TodoList {
             this.addItemNode();
         });
 
+        document.addEventListener('focusin', (event) => {
+            if (event.target && event.target.classList.contains('todo-text')) {
+                event.target.parentNode.parentNode.querySelector('.mdc-chip-set').classList.add('hidden');
+
+                const itemIndex = this.getItemIndex(event.target.parentNode.parentNode);
+                event.target.value = this.items[itemIndex].name;
+            }
+        });
+
         document.addEventListener('focusout', (event) => {
             if (event.target && event.target.classList.contains('todo-text')) {
                 this.saveItem(event.target);
+                event.target.parentNode.parentNode.querySelector('.mdc-chip-set').classList.remove('hidden');
             }
         });
 
@@ -60,13 +70,20 @@ class TodoList {
         });
     }
 
+    getItemIndex(itemNode) {
+        return this.items.findIndex((item => item.id == itemNode.getAttribute('id')));
+    }
+
     removeItemLabel(labelNode) {
         const itemNode = labelNode.parentNode.parentNode;
         const itemIndex = this.items.findIndex((item => item.id == itemNode.getAttribute('id')));
+        const labelText = labelNode.querySelector('.mdc-chip__text').innerHTML;
 
         this.items[itemIndex].labels = this.items[itemIndex].labels.filter((label) => {
-            return label !== labelNode.querySelector('.mdc-chip__text').innerHTML;
+            return label !== labelText;
         });
+
+        this.items[itemIndex].name = this.items[itemIndex].name.replace('#'+ labelText, '').trim();
 
         labelNode.remove();
 
@@ -175,28 +192,38 @@ class TodoList {
             return label.substring(1);
         });
 
-        const itemName = input.value.replace(labelRegExp, '').trim();
-        input.value = itemName;
+        // const itemName = input.value.replace(labelRegExp, '').trim();
+        const itemName = this.stripLabels(input.value);
 
         if (itemIndex >= 0) {
-            this.items[itemIndex].name = itemName;
+            this.items[itemIndex].name = input.value;
+
+            this.items[itemIndex].labels = labels;
+            itemNode.querySelector('.mdc-chip-set').innerHTML = "";
 
             for (let label of labels) {
-                if (this.items[itemIndex].labels.indexOf(label) === -1) {
-                    this.items[itemIndex].labels.push(label);
+                // if (this.items[itemIndex].labels.indexOf(label) === -1) {
+                    // this.items[itemIndex].labels.push(label);
                     this.constructLabel(label, itemNode);
-                }
+                // }
             }
         }
         else {
-            this.items.push(new TodoItem(itemNode.getAttribute('id'), itemName, null, labels));
+            this.items.push(new TodoItem(itemNode.getAttribute('id'), input.value, null, labels));
 
             for (let label of labels) {
                 this.constructLabel(label, itemNode);
             }
         }
 
+        input.value = itemName;
+
         this.storeList();
+    }
+
+    stripLabels(taskString) {
+        const labelRegExp = /(#\S+)/g;
+        return taskString.replace(labelRegExp, '').trim();
     }
 
     loadList() {
@@ -273,7 +300,7 @@ class TodoList {
     constructNodes() {
         for (let item of this.items) {
             let node = TodoItem.buildNode();
-            node = TodoItem.setNodeData(node, item.name);
+            node = TodoItem.setNodeData(node, this.stripLabels(item.name));
             node.setAttribute('id', item.id);
 
             if (item.done) {
