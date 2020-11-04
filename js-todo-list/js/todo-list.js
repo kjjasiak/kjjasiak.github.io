@@ -19,7 +19,9 @@ class TodoList {
                 event.target.parentNode.parentNode.querySelector('.mdc-chip-set').classList.add('hidden');
 
                 const itemIndex = this.getItemIndex(event.target.parentNode.parentNode);
-                event.target.value = this.items[itemIndex].name;
+                if (itemIndex >= 0) {
+                    event.target.value = this.items[itemIndex].name;
+                }
             }
         });
 
@@ -83,7 +85,8 @@ class TodoList {
             return label !== labelText;
         });
 
-        this.items[itemIndex].name = this.items[itemIndex].name.replace('#'+ labelText, '').trim();
+        const regExp = new RegExp(' ?(#' + labelText +')', 'g');
+        this.items[itemIndex].name = this.items[itemIndex].name.replace(regExp, '').trim();
 
         labelNode.remove();
 
@@ -222,7 +225,7 @@ class TodoList {
     }
 
     stripLabels(taskString) {
-        const labelRegExp = /(#\S+)/g;
+        const labelRegExp = /\s?(#\S+)/g;
         return taskString.replace(labelRegExp, '').trim();
     }
 
