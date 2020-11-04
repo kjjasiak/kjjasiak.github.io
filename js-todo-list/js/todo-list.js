@@ -169,7 +169,9 @@ class TodoList {
         const itemIndex = this.items.findIndex((item => item.id == itemNode.getAttribute('id')));
 
         const labelRegExp = /(#\S+)/g;
-        const labels = input.value.match(labelRegExp).map((label) => {
+        let labels = input.value.match(labelRegExp) || [];
+        
+        labels = labels.map((label) => {
             return label.substring(1);
         });
 
@@ -178,14 +180,18 @@ class TodoList {
 
         if (itemIndex >= 0) {
             this.items[itemIndex].name = itemName;
+
+            for (let label of labels) {
+                if (this.items[itemIndex].labels.indexOf(label) === -1) {
+                    this.items[itemIndex].labels.push(label);
+                    this.constructLabel(label, itemNode);
+                }
+            }
         }
         else {
             this.items.push(new TodoItem(itemNode.getAttribute('id'), itemName, null, labels));
-        }
 
-        for (let label of labels) {
-            if (this.items[itemIndex].labels.indexOf(label) === -1) {
-                this.items[itemIndex].labels.push(label);
+            for (let label of labels) {
                 this.constructLabel(label, itemNode);
             }
         }
