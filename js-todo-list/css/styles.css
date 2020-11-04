@@ -4,6 +4,10 @@ body {
     font-family: 'Roboto', sans-serif;
 }
 
+.hidden {
+    display: none;
+}
+
 .mdc-drawer-app-content {
     flex: auto;
     overflow: auto;
@@ -61,4 +65,9 @@ li.todo-done .todo-input {
 
 .mdc-list-item__meta {
     display: flex;
+}
+
+li .mdc-chip-set {
+    display: flex;
+    flex-wrap: nowrap;
 }

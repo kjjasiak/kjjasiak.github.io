@@ -2,6 +2,8 @@
 <html>
 
 <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
   <title>Todo List</title>
   <link rel="stylesheet" href="css/reset.css">
   <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
@@ -12,37 +14,23 @@
 </head>
 
 <body>
-  <header class="mdc-top-app-bar mdc-top-app-bar--fixed">
+  <header class="mdc-top-app-bar app-bar" id="app-bar">
     <div class="mdc-top-app-bar__row">
       <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
-        <!-- <button class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button" aria-label="Open navigation menu">menu</button> -->
+        <button class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button">menu</button>
         <span class="mdc-top-app-bar__title">Todo List</span>
       </section>
-      <!-- <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
-            <button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Favorite">favorite</button>
-            <button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Search">search</button>
-            <button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Options">more_vert</button>
-          </section> -->
     </div>
   </header>
-  <aside class="mdc-drawer mdc-top-app-bar--fixed-adjust">
+
+  <aside class="mdc-drawer mdc-drawer--dismissible mdc-top-app-bar--fixed-adjust">
     <div class="mdc-drawer__content">
-      <div class="mdc-list">
-        <a class="mdc-list-item mdc-list-item--activated" href="#" aria-current="label">
+      <div class="mdc-list todo-labels-list">
+        <a class="mdc-list-item todo-labels-list-item all-labels mdc-list-item--activated" href="#" aria-current="label">
           <span class="mdc-list-item__ripple"></span>
           <i class="material-icons mdc-list-item__graphic" aria-hidden="true">inbox</i>
           <span class="mdc-list-item__text">All items</span>
         </a>
-        <!-- <a class="mdc-list-item" href="#">
-              <span class="mdc-list-item__ripple"></span>
-              <i class="material-icons mdc-list-item__graphic" aria-hidden="true">label</i>
-              <span class="mdc-list-item__text">Studies</span>
-            </a>
-            <a class="mdc-list-item" href="#">
-              <span class="mdc-list-item__ripple"></span>
-              <i class="material-icons mdc-list-item__graphic" aria-hidden="true">label</i>
-              <span class="mdc-list-item__text">House</span>
-            </a> -->
       </div>
     </div>
   </aside>
@@ -60,6 +48,16 @@
   <script type="text/javascript" src="js/todo-list.js"></script>
   <script>
     const list = new TodoList();
+
+    const drawer = new mdc.drawer.MDCDrawer(document.querySelector('.mdc-drawer')),
+          topAppBar = new mdc.topAppBar.MDCTopAppBar(document.getElementById('app-bar'));
+    
+    drawer.open = true;
+
+    topAppBar.setScrollTarget(document.getElementById('main-content'));
+    topAppBar.listen('MDCTopAppBar:nav', () => {
+      drawer.open = !drawer.open;
+    });
   </script>
 </body>
 

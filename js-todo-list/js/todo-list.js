@@ -3,8 +3,9 @@ class TodoList {
         this.list = document.getElementById(selectorsIds.list) || document.getElementById('todo-list');
         this.addButton = document.getElementById(selectorsIds.addButton) || document.getElementById('todo-add');
         this.items = [];
-
+        this.labels = [];
         this.loadList();
+        this.loadLabels();
         this.attachListeners();
     }
 
@@ -31,6 +32,17 @@ class TodoList {
             if (event.target && event.target.classList.contains('todo-status')) {
                 this.toggleItemStatus(event.target);
             }
+
+            if (event.target && event.target.classList.contains('todo-label-remove')) {
+                this.removeItemLabel(event.target.parentNode.parentNode);
+            }
+
+            if (event.target && event.target.classList.contains('todo-labels-list-item')) {
+                event.preventDefault();
+
+                const filterQuery = event.target.classList.contains('all-labels') ? 'all' : event.target.querySelector('.mdc-list-item__text').innerHTML;
+                this.filterItems(filterQuery); 
+            }
         });
 
         document.addEventListener('keydown', (event) => {
@@ -44,6 +56,37 @@ class TodoList {
                 case 13:
                     this.onItemEnterKey(event);
                     break;
+            }
+        });
+    }
+
+    removeItemLabel(labelNode) {
+        const itemNode = labelNode.parentNode.parentNode;
+        const itemIndex = this.items.findIndex((item => item.id == itemNode.getAttribute('id')));
+
+        this.items[itemIndex].labels = this.items[itemIndex].labels.filter((label) => {
+            return label !== labelNode.querySelector('.mdc-chip__text').innerHTML;
+        });
+
+        labelNode.remove();
+
+        this.storeList();
+    }
+
+    filterItems(filterQuery) {
+        const itemsNodes = Array.from(this.list.children);
+
+        itemsNodes.map((node) => node.classList.remove('hidden'));
+
+        if (filterQuery === 'all') {
+            return;
+        }
+
+        itemsNodes.map((node) => {
+            let itemIndex = this.items.findIndex((item => item.id == node.getAttribute('id')));
+
+            if (this.items[itemIndex].labels.indexOf(filterQuery) === -1) {
+                node.classList.add('hidden');
             }
         });
     }
@@ -125,11 +168,26 @@ class TodoList {
 
         const itemIndex = this.items.findIndex((item => item.id == itemNode.getAttribute('id')));
 
+        const labelRegExp = /(#\S+)/g;
+        const labels = input.value.match(labelRegExp).map((label) => {
+            return label.substring(1);
+        });
+
+        const itemName = input.value.replace(labelRegExp, '').trim();
+        input.value = itemName;
+
         if (itemIndex >= 0) {
-            this.items[itemIndex].name = input.value;
+            this.items[itemIndex].name = itemName;
         }
         else {
-            this.items.push(new TodoItem(itemNode.getAttribute('id'), input.value, null, []));
+            this.items.push(new TodoItem(itemNode.getAttribute('id'), itemName, null, labels));
+        }
+
+        for (let label of labels) {
+            if (this.items[itemIndex].labels.indexOf(label) === -1) {
+                this.items[itemIndex].labels.push(label);
+                this.constructLabel(label, itemNode);
+            }
         }
 
         this.storeList();
@@ -144,12 +202,65 @@ class TodoList {
         localStorage.setItem('todoList', JSON.stringify(this.items));
     }
 
+    loadLabels() {
+        this.labels = JSON.parse(localStorage.getItem('todo-list-labels')) || [];
+        this.constructLabelsList();
+    }
+
+    storeLabels() {
+        localStorage.setItem('todo-list-labels', JSON.stringify(this.labels));
+    }
+
     toggleNoItemsMsg() {
         if (this.list.querySelectorAll('li').length === 0) {
             document.getElementById('todo-list-empty').innerHTML = 'No items to show';
         }
         else {
             document.getElementById('todo-list-empty').innerHTML = '';
+        }
+    }
+
+    constructLabel(labelText, itemNode) {
+        const chipSetEl = itemNode.querySelector('.mdc-chip-set');
+        const chipSet = new mdc.chips.MDCChipSet(chipSetEl);
+        
+        const chipEl = document.createElement('div');
+
+        chipEl.classList.add('mdc-chip', 'todo-label-chip');
+        chipEl.setAttribute('role', 'row');
+        
+        const chipHtml = `<div class="mdc-chip__ripple"></div>
+        <span role="gridcell">
+          <span role="button" tabindex="0" class="mdc-chip__primary-action">
+            <span class="mdc-chip__text">${labelText}</span>
+          </span>
+        </span>
+        <span role="gridcell">
+          <i class="material-icons mdc-chip__icon mdc-chip__icon--trailing todo-label-remove" tabindex="-1" role="button">cancel</i>
+        </span>`;
+
+        chipEl.innerHTML = chipHtml;
+        chipSetEl.appendChild(chipEl);
+        chipSet.addChip(chipEl);
+
+        if (this.labels.indexOf(labelText) === -1) {
+            this.labels.push(labelText);
+            this.storeLabels();
+        }
+    }
+
+    constructLabelsList() {
+        const labelsListNode = document.querySelector('.todo-labels-list');
+
+        for (let label of this.labels) {
+            const labelEl = document.createElement('a');
+            labelEl.classList.add('mdc-list-item', 'todo-labels-list-item');
+            labelEl.setAttribute('href', '#');
+
+            labelEl.innerHTML = `<span class="mdc-list-item__ripple"></span>
+                  <i class="material-icons mdc-list-item__graphic" aria-hidden="true">label</i>
+                  <span class="mdc-list-item__text">${label}</span>`;
+            labelsListNode.append(labelEl);
         }
     }
 
@@ -162,6 +273,10 @@ class TodoList {
             if (item.done) {
                 node.classList.add('todo-done');
                 node.querySelector('input[type="checkbox"]').setAttribute('checked', true);
+            }
+
+            for (let label of item.labels) {
+                this.constructLabel(label, node);
             }
 
             this.list.append(node);
@@ -224,6 +339,7 @@ class TodoItem {
                 <input type="text" placeholder="Write your todo here (min. 3 characters)" class="mdc-text-field__input todo-text"
                     aria-label="">
             </div>
+            <div class="mdc-chip-set mdc-chip-set--input" role="grid"></div>
     <span class="mdc-list-item__meta">
       <button class="mdc-icon-button material-icons todo-delete">delete</button>
     </span>
