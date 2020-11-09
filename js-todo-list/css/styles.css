@@ -71,3 +71,12 @@ li .mdc-chip-set {
 .hidden {
     display: none !important;
 }
+
+li.overdue .mdc-checkbox .mdc-checkbox__native-control:enabled:not(:checked):not(:indeterminate):not([data-indeterminate=true])~.mdc-checkbox__background {
+    border-color: #f64444;
+}
+
+li.overdue .mdc-checkbox .mdc-checkbox__native-control:enabled:checked~.mdc-checkbox__background, .mdc-checkbox .mdc-checkbox__native-control:enabled:indeterminate~.mdc-checkbox__background, .mdc-checkbox .mdc-checkbox__native-control[data-indeterminate=true]:enabled~.mdc-checkbox__background {
+    background-color:  #f64444;
+    border-color: #f64444;
+}

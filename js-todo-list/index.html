@@ -26,11 +26,6 @@
   <aside class="mdc-drawer mdc-drawer--dismissible mdc-top-app-bar--fixed-adjust">
     <div class="mdc-drawer__content">
       <div class="mdc-list todo-labels-list">
-        <a class="mdc-list-item todo-labels-list-item all-labels mdc-list-item--activated" href="#" aria-current="label">
-          <span class="mdc-list-item__ripple"></span>
-          <i class="material-icons mdc-list-item__graphic" aria-hidden="true">inbox</i>
-          <span class="mdc-list-item__text">All items</span>
-        </a>
       </div>
     </div>
   </aside>
@@ -52,7 +47,7 @@
     const drawer = new mdc.drawer.MDCDrawer(document.querySelector('.mdc-drawer')),
           topAppBar = new mdc.topAppBar.MDCTopAppBar(document.getElementById('app-bar'));
     
-    drawer.open = true;
+    drawer.open = window.outerWidth >= 768;
 
     topAppBar.setScrollTarget(document.getElementById('main-content'));
     topAppBar.listen('MDCTopAppBar:nav', () => {
