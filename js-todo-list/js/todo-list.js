@@ -468,11 +468,11 @@ class TodoItem {
         return node;
     }
 
-    static setNodeData(node, name, date = "", labels = []) {
+    static setNodeData(node, name, date = null, labels = []) {
         const nameInput = node.querySelector('.todo-text');
         nameInput.value = name;
 
-        if (date !== "") {
+        if (date !== null) {
             const dateInput = node.querySelector('input[type="date"]');
             // let dateString = `${date.getUTCFullYear()}-${date.getUTCMonth()+1}-`;
             // dateString += (date.getUTCDate() < 10) ? '0' + date.getUTCDate() : date.getUTCDate();
@@ -483,7 +483,7 @@ class TodoItem {
             const dateObj = new Date(date),
                   currDate = new Date().setHours(0, 0, 0, 0);
 
-            if (date !== "" && date !== null && dateObj < currDate) {
+            if (date !== null && dateObj < currDate) {
                 node.classList.add('overdue');
             }
         }
@@ -520,7 +520,7 @@ class TodoItem {
                     aria-label="">
             </div>
             <div class="mdc-chip-set mdc-chip-set--input" role="grid"></div>
-            <input type="date" class="todo-date" name="todo-date" value="">
+            <input type="date" placeholder="YYYY-MM-dd" class="todo-date" name="todo-date">
     <span class="mdc-list-item__meta">
       <button class="mdc-icon-button material-icons todo-delete">delete</button>
     </span>
